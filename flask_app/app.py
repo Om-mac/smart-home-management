@@ -10,7 +10,6 @@ sensor_data = {
     "mq6": 0,
     "flame": 1
 }
-
 # === Door command storage ===
 door_command = "CLOSED"
 

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Home Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    /* === General Layout === */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #74ABE2, #5563DE);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    /* === Sensor Cards === */
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      width: 90%;
+      max-width: 900px;
+    }
+
+    .sensor {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .sensor:hover {
+      transform: translateY(-5px);
+    }
+
+    .icon {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    .label {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    .value {
+      font-size: 1.8em;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    /* === Door Button === */
+    .btn {
+      margin-top: 40px;
+      padding: 15px 40px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 30px;
+      background: #00C896;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 200, 150, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #00B588;
+      box-shadow: 0 8px 20px rgba(0, 200, 150, 0.6);
+      transform: scale(1.05);
+    }
+
+    /* === Status Section === */
+    .status {
+      margin-top: 30px;
+      font-size: 1.1em;
+      color: #f8f9fa;
+      opacity: 0.8;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 15px;
+      font-size: 0.9em;
+      color: #e0e0e0;
+      opacity: 0.7;
+    }
+
+    /* === Animation === */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sensor {
+      animation: fadeIn 0.8s ease-in-out;
+    }
+  </style>
+
+  <script>
+    // === Auto-refresh only sensor section every second ===
+    setInterval(() => {
+      fetch("/data")
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("temp").innerText = data.temp + " °C";
+          document.getElementById("hum").innerText = data.hum + " %";
+          document.getElementById("mq2").innerText = data.mq2;
+          document.getElementById("mq6").innerText = data.mq6;
+          document.getElementById("flame").innerText =
+            data.flame === "0" ? "🔥 Detected ⚠️" : "✅ Safe";
+        });
+    }, 1000);
+  </script>
+</head>
+
+<body>
+  <h1>🏠 Smart Home Dashboard</h1>
+
+  <div class="dashboard">
+    <div class="sensor">
+      <div class="icon">🌡</div>
+      <div class="label">Temperature</div>
+      <div class="value" id="temp">{{ data['temp'] }} °C</div>
+    </div>
+
+    <div class="sensor">
+      <div class="icon">💧</div>
+      <div class="label">Humidity</div>
+      <div class="value" id="hum">{{ data['hum'] }} %</div>
+    </div>
+
+    <div class="sensor">
+      <div class="icon">🔥</div>
+      <div class="label">MQ2 Sensor</div>
+      <div class="value" id="mq2">{{ data['mq2'] }}</div>
+    </div>
+
+    <div class="sensor">
+      <div class="icon">🌫</div>
+      <div class="label">MQ6 Sensor</div>
+      <div class="value" id="mq6">{{ data['mq6'] }}</div>
+    </div>
+
+    <div class="sensor">
+      <div class="icon">🚨</div>
+      <div class="label">Flame Detection</div>
+      <div class="value" id="flame">
+        {% if data['flame'] == '0' %}
+          🔥 Detected ⚠️
+        {% else %}
+          ✅ Safe
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <form action="/open-door">
+    <button class="btn" type="submit">🔓 Open Door</button>
+  </form>
+
+  <div class="status">ESP32 connected to Flask server. Data auto-refreshing...</div>
+  <footer>© 2025 Smart IoT Project — Designed by Om Tapdiya</footer>
+</body>
+</html>

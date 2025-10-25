@@ -14,7 +14,7 @@ async function updateSensorData() {
     }
 }
 
-setInterval(updateSensorData, 2000);
+setInterval(updateSensorData, 500);
 updateSensorData(); // initial call
 
 // Open door button

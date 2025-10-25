@@ -5,22 +5,22 @@
 #include <Adafruit_Fingerprint.h>
 #include <HardwareSerial.h>
 
-// === Pin Definitions ===
+
 #define DHTPIN 32
 #define DHTTYPE DHT11
 #define FLAME_PIN 25
 #define SERVO_PIN 27
 #define BUZZER_PIN 26
-#define MQ2_PIN 34   // Digital input
-#define MQ6_PIN 35   // Digital input
+#define MQ2_PIN 34   
+#define MQ6_PIN 35   
 #define FINGER_RX 16
 #define FINGER_TX 17
-#define SOLENOID_PIN 33  // Relay controlling 12V solenoid
+#define SOLENOID_PIN 33 
 
-// === Relay Config ===
-#define RELAY_ACTIVE_HIGH true   // Change to false if your relay is active LOW
 
-// Define readable solenoid states
+#define RELAY_ACTIVE_HIGH true   
+
+
 const int SOLENOID_LOCKED_STATE   = (RELAY_ACTIVE_HIGH ? HIGH : LOW);
 const int SOLENOID_UNLOCKED_STATE = (RELAY_ACTIVE_HIGH ? LOW  : HIGH);
 
@@ -29,11 +29,11 @@ Servo doorServo;
 HardwareSerial fingerSerial(2);
 Adafruit_Fingerprint finger(&fingerSerial);
 
-// === WiFi credentials ===
+
 const char* ssid = "DEAD";
 const char* password = "12345678";
 
-// === Flask server URLs ===
+
 const char* serverURL = "http://10.71.7.64:5000/update";
 const char* doorStatusURL = "http://10.71.7.64:5000/door_status";
 const char* doorResetURL  = "http://10.71.7.64:5000/door_status_reset";
@@ -51,13 +51,13 @@ void setup() {
   pinMode(MQ6_PIN, INPUT);
   pinMode(SOLENOID_PIN, OUTPUT);
 
-  // === Ensure Solenoid Starts Locked ===
+
   digitalWrite(SOLENOID_PIN, SOLENOID_LOCKED_STATE);
 
   doorServo.attach(SERVO_PIN);
-  doorServo.write(0); // Start closed
+  doorServo.write(0);
 
-  // === Fingerprint Sensor Setup ===
+
   fingerSerial.begin(57600, SERIAL_8N1, FINGER_RX, FINGER_TX);
   finger.begin(57600);
   Serial.print("🔍 Checking fingerprint sensor... ");
@@ -68,7 +68,7 @@ void setup() {
     while (1);
   }
 
-  // === WiFi Connection ===
+
   Serial.print("📡 Connecting to WiFi: ");
   Serial.println(ssid);
   WiFi.begin(ssid, password);
@@ -98,21 +98,21 @@ void loop() {
   float temp = dht.readTemperature();
   float hum = dht.readHumidity();
   int flame = digitalRead(FLAME_PIN);
-  int mq2Digital = digitalRead(MQ2_PIN);  // 1 = clean air, 0 = gas detected
-  int mq6Digital = digitalRead(MQ6_PIN);  // 1 = clean air, 0 = gas detected
+  int mq2Digital = digitalRead(MQ2_PIN);  
+  int mq6Digital = digitalRead(MQ6_PIN);  
 
-  // === Display sensor readings ===
+  
   Serial.printf("🌡 Temp: %.2f°C | 💧 Humidity: %.2f%%\n", temp, hum);
   Serial.printf("🔥 Flame: %d\n🧪 MQ2 : %s\n🧪 MQ6 : %s\n", 
                 flame, 
                 mq2Digital ? "Not detected" : "Gas Detected", 
                 mq6Digital ? "Not detected" : "Gas Detected");
 
-  // === Fire detection logic ===
-  if (flame == LOW) {  // LOW means flame detected (depending on module)
+
+  if (flame == LOW) {  
     Serial.println("🚨🚨🚨 FIRE DETECTED! 🚨🚨🚨");
     Serial.println("🔥🔥🔥 Triggering Alarm 🔥🔥🔥");
-    beep(10, 200);  // Beep buzzer 10 times
+    beep(10, 200);  
   }
 
   sendDataToFlask(temp, hum, mq2Digital, mq6Digital, flame);
@@ -122,7 +122,7 @@ void loop() {
   delay(2000);
 }
 
-// === Fingerprint Handling ===
+
 void checkFingerprint() {
   uint8_t p = finger.getImage();
   if (p != FINGERPRINT_OK) return;
@@ -145,7 +145,7 @@ void checkFingerprint() {
   }
 }
 
-// === Send Data to Flask Server ===
+
 void sendDataToFlask(float temp, float hum, int mq2, int mq6, int flame) {
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("⚠️ WiFi not connected. Skipping data send.");
@@ -169,7 +169,7 @@ void sendDataToFlask(float temp, float hum, int mq2, int mq6, int flame) {
   http.end();
 }
 
-// === Check Door Command from Flask ===
+
 void checkDoorCommandFromFlask() {
   if (WiFi.status() != WL_CONNECTED) return;
 
@@ -185,7 +185,7 @@ void checkDoorCommandFromFlask() {
       Serial.println("🔓 Flask Command: Opening Door...");
       smoothDoorCycle(130);
 
-      // Reset the door command
+
       HTTPClient http2;
       http2.begin(doorResetURL);
       http2.GET();
@@ -197,10 +197,10 @@ void checkDoorCommandFromFlask() {
   http.end();
 }
 
-// === Door Cycle: Unlock Solenoid + Open/Close Servo ===
+
 void smoothDoorCycle(int angle) {
   Serial.println("🔑 Unlocking Solenoid...");
-  digitalWrite(SOLENOID_PIN, SOLENOID_UNLOCKED_STATE); // Unlock
+  digitalWrite(SOLENOID_PIN, SOLENOID_UNLOCKED_STATE);
   delay(1000);
 
   Serial.println("🚪 Opening Door...");
@@ -226,7 +226,7 @@ void smoothDoorCycle(int angle) {
   Serial.println("✅ Door cycle complete.");
 }
 
-// === Buzzer Beep Function ===
+
 void beep(int times, int duration) {
   for (int i = 0; i < times; i++) {
     digitalWrite(BUZZER_PIN, HIGH);

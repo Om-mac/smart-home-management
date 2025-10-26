@@ -46,10 +46,13 @@ PASTE THE IP TO CODE.INO IP VARIABLES
 4. OPEN YOU LOCALHOST AND CHEAK THE DASHBOARD READINGS
   
 
+
+-----------------------------------------------------------------------------------------------------
 -- OM TAPDIYA
 -- VISHWAKARMA INSTITUTE OF TECHNOLOGY
 -- DEPT CS(DATA SCIENCE)
 
 LINKED-IN : www.linkedin.com/in/omtapdiya
 GIT-HUB : https://github.com/Om-mac
+EMAIL : omtapdiya75@gmail.com
 

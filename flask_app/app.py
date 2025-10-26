@@ -4,7 +4,6 @@ from twilio.rest import Client
 
 app = Flask(__name__)
 
-# === Store latest sensor values ===
 sensor_data = {
     "temp": 0,
     "hum": 0,
@@ -13,7 +12,7 @@ sensor_data = {
     "flame": 1
 }
 
-# === Door command storage ===
+
 door_command = "CLOSED"
 
 # === Twilio WhatsApp Configuration ===
@@ -25,13 +24,13 @@ TWILIO_WHATSAPP_FROM = "whatsapp:+14155238886"   # Twilio sandbox number
 TO_WHATSAPP_NUMBER = "whatsapp:+919420440361"    # Your verified WhatsApp number
 
 
-# === Home page ===
+#dashboard
 @app.route('/')
 def index():
     return render_template('index.html', data=sensor_data)
 
 
-# === ESP32 updates sensor values here ===
+# ESP32 updates sensor values 
 @app.route('/update')
 def update():
     global sensor_data
@@ -43,8 +42,8 @@ def update():
     sensor_data['mq6'] = request.args.get('mq6', 0)
     sensor_data['flame'] = int(request.args.get('flame', 1))
 
-    # === Send WhatsApp Alert if Flame Detected ===
-    if sensor_data['flame'] == 0:   # assuming 0 = flame detected
+    # WhatsApp Alert if Flame Detected
+    if sensor_data['flame'] == 0:   # 0 means flame is  detected (as flame sensor o/p)
         try:
             message = client.messages.create(
                 from_=TWILIO_WHATSAPP_FROM,

@@ -124,7 +124,7 @@
           document.getElementById("mq2").innerText = data.mq2;
           document.getElementById("mq6").innerText = data.mq6;
           document.getElementById("flame").innerText =
-            data.flame === "0" ? "🔥 Detected ⚠️" : "✅ Safe";
+            data.flame == 0 ? "🔥 Detected ⚠️" : "✅ Safe";
         });
     }, 500);
   </script>

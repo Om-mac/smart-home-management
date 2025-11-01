@@ -1,4 +1,4 @@
-// Fetch sensor data every 2 seconds
+// Fetch sensor data every 0.5 seconds
 async function updateSensorData() {
     try {
         const response = await fetch('/get_sensor_data');
